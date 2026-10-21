@@ -1,3 +1,4 @@
+The signed artwork is kqc-neon-768.png (see SEAL.json). kqc-neon-1024.png is a larger copy for display only.
 # kqc-pqaccount
 
 Open-source hybrid post-quantum smart wallet for Ethereum (ERC-4337).
