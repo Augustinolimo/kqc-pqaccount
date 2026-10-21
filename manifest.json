@@ -1,0 +1,15 @@
+{
+  "name": "KQC Ecosystem App",
+  "short_name": "KQC",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d5c36",
+  "icons": [
+    {
+      "src": "kqc-neon-768.png",
+      "sizes": "768x768",
+      "type": "image/png"
+    }
+  ]
+}
