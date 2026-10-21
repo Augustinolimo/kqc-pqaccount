@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KQC Ecosystem App</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d5c36">
+    <style>
+        body { font-family: sans-serif; background: #f0f4f1; margin: 0; padding: 0; color: #333; }
+        header { background: #0d5c36; color: white; padding: 15px; text-align: center; font-size: 1.1rem; font-weight: bold; }
+        .container { padding: 15px; max-width: 600px; margin: auto; padding-bottom: 80px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .btn { background: #0d5c36; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: bold; }
+        .nav { display: flex; background: white; position: fixed; bottom: 0; width: 100%; border-top: 1px solid #ddd; justify-content: space-around; padding: 12px 0; }
+        .nav button { background: none; border: none; font-size: 1rem; font-weight: bold; color: #0d5c36; cursor: pointer; }
+        .view { display: none; }
+        .active { display: block; }
+    </style>
+</head>
+<body>
+    <header>Kenya Quantum Coin (KQC) Ecosystem</header>
+    <div class="container">
+        <!-- Wallet View -->
+        <div id="wallet-view" class="view active">
+            <div class="card">
+                <h3>KQC Wallet</h3>
+                <p><strong>Total Balance:</strong> KES 24,240</p>
+                <p>15,638.71 KQC on Kenya home chain</p>
+                <p><small>Address: 0x2463f6...e62d68</small></p>
+                <p><span style="background:#e1f5fe; padding:4px 8px; border-radius:4px;">ML-DSA-65 + ECDSA</span></p>
+            </div>
+            <div class="card">
+                <h4>Send Asset</h4>
+                <label>To address:</label><br>
+                <input type="text" placeholder="0x..." style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <label>Amount:</label><br>
+                <input type="number" value="0.00" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <button class="btn" onclick="alert('Transaction signed!')">Sign and send</button>
+            </div>
+        </div>
+        <!-- Verifier View -->
+        <div id="verifier-view" class="view">
+            <div class="card">
+                <h3>KQC Seal Verifier</h3>
+                <p>Checks the post-quantum signature (ML-DSA-65, FIPS 204) on official Kenya Quantum Coin artwork.</p>
+                <div style="text-align:center; margin:15px 0;">
+                    <div style="background:#0d5c36; color:white; width:60px; height:60px; line-height:60px; border-radius:50%; display:inline-block; font-size:24px; font-weight:bold;">K</div>
+                </div>
+                <button class="btn" onclick="alert('Signature verified successfully!')">Verify Seal</button>
+            </div>
+        </div>
+    </div>
+    <!-- Bottom Nav -->
+    <div class="nav">
+        <button onclick="switchView('wallet')">Wallet</button>
+        <button onclick="switchView('verifier')">Seal Verifier</button>
+    </div>
+    <script>
+        function switchView(viewName) {
+            document.getElementById('wallet-view').classList.remove('active');
+            document.getElementById('verifier-view').classList.remove('active');
+            if(viewName === 'wallet') {
+                document.getElementById('wallet-view').classList.add('active');
+            } else {
+                document.getElementById('verifier-view').classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
