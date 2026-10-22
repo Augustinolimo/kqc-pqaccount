@@ -16,6 +16,7 @@
         .nav button { background: none; border: none; font-size: 1rem; font-weight: bold; color: #0d5c36; cursor: pointer; }
         .view { display: none; }
         .active { display: block; }
+        .asset-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -24,16 +25,28 @@
         <!-- Wallet View -->
         <div id="wallet-view" class="view active">
             <div class="card">
-                <h3>KQC Wallet</h3>
+                <h3>KQC Multi-Chain Wallet</h3>
                 <p><strong>Total Balance:</strong> KES 24,240</p>
-                <p>15,638.71 KQC on Kenya home chain</p>
                 <p><small>Address: 0x2463f6...e62d68</small></p>
                 <p><span style="background:#e1f5fe; padding:4px 8px; border-radius:4px;">ML-DSA-65 + ECDSA</span></p>
+                
+                <h4 style="margin-top:20px;">Assets</h4>
+                <div class="asset-item"><span>🟢 KQC (Kenya Home Chain)</span><span>15,638.71</span></div>
+                <div class="asset-item"><span>🟠 BTC (Bitcoin)</span><span>0.0042</span></div>
+                <div class="asset-item"><span>🔷 ETH (Ethereum)</span><span>0.1500</span></div>
+                <div class="asset-item"><span>🟣 SOL (Solana)</span><span>1.2500</span></div>
             </div>
             <div class="card">
                 <h4>Send Asset</h4>
+                <label>Select Asset:</label><br>
+                <select style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;">
+                    <option>KQC</option>
+                    <option>BTC</option>
+                    <option>ETH</option>
+                    <option>SOL</option>
+                </select><br>
                 <label>To address:</label><br>
-                <input type="text" placeholder="0x..." style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <input type="text" placeholder="0x... or wallet address" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
                 <label>Amount:</label><br>
                 <input type="number" value="0.00" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
                 <button class="btn" onclick="alert('Transaction signed!')">Sign and send</button>
@@ -69,3 +82,4 @@
     </script>
 </body>
 </html>
+
