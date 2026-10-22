@@ -12,11 +12,13 @@
         .container { padding: 15px; max-width: 600px; margin: auto; padding-bottom: 80px; }
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .btn { background: #0d5c36; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: bold; }
+        .btn-mpesa { background: #1b5e20; }
         .nav { display: flex; background: white; position: fixed; bottom: 0; width: 100%; border-top: 1px solid #ddd; justify-content: space-around; padding: 12px 0; }
         .nav button { background: none; border: none; font-size: 1rem; font-weight: bold; color: #0d5c36; cursor: pointer; }
         .view { display: none; }
         .active { display: block; }
         .asset-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .demo-chip { background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; display: inline-block; margin: 4px; font-weight: bold; color: #2e7d32; }
     </style>
 </head>
 <body>
@@ -25,38 +27,50 @@
         <!-- Wallet View -->
         <div id="wallet-view" class="view active">
             <div class="card">
-                <h3>KQC Multi-Chain Wallet</h3>
+                <h3>KQC Wallet & M-Pesa</h3>
                 <p><strong>Total Balance:</strong> KES 24,240</p>
+                <p>15,638.71 KQC on Kenya home chain</p>
                 <p><small>Address: 0x2463f6...e62d68</small></p>
                 <p><span style="background:#e1f5fe; padding:4px 8px; border-radius:4px;">ML-DSA-65 + ECDSA</span></p>
                 
-                <h4 style="margin-top:20px;">Assets</h4>
+                <h4 style="margin-top:20px;">Multi-Chain Assets</h4>
                 <div class="asset-item"><span>🟢 KQC (Kenya Home Chain)</span><span>15,638.71</span></div>
                 <div class="asset-item"><span>🟠 BTC (Bitcoin)</span><span>0.0042</span></div>
                 <div class="asset-item"><span>🔷 ETH (Ethereum)</span><span>0.1500</span></div>
                 <div class="asset-item"><span>🟣 SOL (Solana)</span><span>1.2500</span></div>
             </div>
+
+            <!-- M-Pesa Deposit Card -->
+            <div class="card" style="border-left: 5px solid #2e7d32;">
+                <h4>M-Pesa Express (STK Push)</h4>
+                <p><small>Deposit KES instantly into your KQC wallet.</small></p>
+                <label>M-Pesa Phone Number:</label><br>
+                <input type="tel" id="mpesa-phone" value="2547" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <label>Amount (KES):</label><br>
+                <input type="number" id="mpesa-amount" value="1000" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <button class="btn btn-mpesa" onclick="alert('STK Push sent! Check your phone for the M-Pesa prompt.')">Deposit via M-Pesa</button>
+            </div>
+
             <div class="card">
                 <h4>Send Asset</h4>
-                <label>Select Asset:</label><br>
-                <select style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;">
-                    <option>KQC</option>
-                    <option>BTC</option>
-                    <option>ETH</option>
-                    <option>SOL</option>
-                </select><br>
-                <label>To address:</label><br>
-                <input type="text" placeholder="0x... or wallet address" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <label>Quick Contacts:</label><br>
+                <div>
+                    <span class="demo-chip" onclick="fillAddress('Wanjiku (demo)')">Wanjiku (demo)</span>
+                    <span class="demo-chip" onclick="fillAddress('Kamau Mart (demo)')">Kamau Mart (demo)</span>
+                </div><br>
+                <label>To address / recipient:</label><br>
+                <input type="text" id="to-address" placeholder="0x... or phone number" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
                 <label>Amount:</label><br>
                 <input type="number" value="0.00" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
-                <button class="btn" onclick="alert('Transaction signed!')">Sign and send</button>
+                <button class="btn" onclick="alert('Transaction signed successfully!')">Sign and send</button>
             </div>
         </div>
+
         <!-- Verifier View -->
         <div id="verifier-view" class="view">
             <div class="card">
                 <h3>KQC Seal Verifier</h3>
-                <p>Checks the post-quantum signature (ML-DSA-65, FIPS 204) on official Kenya Quantum Coin artwork.</p>
+                <p>Checks the post-quantum signature (`ML-DSA-65, FIPS 204`) on official Kenya Quantum Coin artwork.</p>
                 <div style="text-align:center; margin:15px 0;">
                     <div style="background:#0d5c36; color:white; width:60px; height:60px; line-height:60px; border-radius:50%; display:inline-block; font-size:24px; font-weight:bold;">K</div>
                 </div>
@@ -64,11 +78,13 @@
             </div>
         </div>
     </div>
+
     <!-- Bottom Nav -->
     <div class="nav">
         <button onclick="switchView('wallet')">Wallet</button>
         <button onclick="switchView('verifier')">Seal Verifier</button>
     </div>
+
     <script>
         function switchView(viewName) {
             document.getElementById('wallet-view').classList.remove('active');
@@ -79,7 +95,11 @@
                 document.getElementById('verifier-view').classList.add('active');
             }
         }
+        function fillAddress(name) {
+            document.getElementById('to-address').value = name;
+        }
     </script>
 </body>
 </html>
+
 
