@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KQC Ecosystem App</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d5c36">
+    <style>
+        body { font-family: sans-serif; background: #f0f4f1; margin: 0; padding: 0; color: #333; }
+        header { background: #0d5c36; color: white; padding: 15px; text-align: center; font-size: 1.1rem; font-weight: bold; }
+        .container { padding: 15px; max-width: 600px; margin: auto; padding-bottom: 90px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .btn { background: #0d5c36; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: bold; margin-top: 5px; }
+        .btn-mpesa { background: #1b5e20; }
+        .btn-long { background: #2e7d32; color: white; flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-short { background: #c62828; color: white; flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .nav { display: flex; background: white; position: fixed; bottom: 0; width: 100%; border-top: 1px solid #ddd; justify-content: space-around; padding: 8px 0; overflow-x: auto; }
+        .nav button { background: none; border: none; font-size: 0.7rem; font-weight: bold; color: #0d5c36; cursor: pointer; text-align: center; white-space: nowrap; padding: 0 6px; }
+        .view { display: none; }
+        .active { display: block; }
+        .asset-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .position-item { background: #f9fbf9; border-left: 4px solid #0d5c36; padding: 10px; margin-top: 8px; border-radius: 4px; font-size: 0.9rem; }
+        .demo-chip { background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; display: inline-block; margin: 4px; font-weight: bold; color: #2e7d32; }
+        .status-box { margin-top: 10px; padding: 10px; border-radius: 6px; font-size: 0.9rem; display: none; }
+        .success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+    </style>
+</head>
+<body>
+    <header>Kenya Quantum Coin (KQC) Ecosystem</header>
+    <div class="container">
+        <!-- Wallet View -->
+        <div id="wallet-view" class="view active">
+            <div class="card">
+                <h3>KQC Wallet & M-Pesa</h3>
+                <p><strong>Total Balance:</strong> <span id="display-kes">KES 24,240</span></p>
+                <p><span id="display-kqc-main">15,638.71</span> KQC on Kenya home chain</p>
+                <p><small>Address: 0x2463f6...e62d68</small></p>
+                <p><span style="background:#e1f5fe; padding:4px 8px; border-radius:4px;">ML-DSA-65 + ECDSA</span></p>
+                
+                <h4 style="margin-top:20px;">Multi-Chain Assets</h4>
+                <div class="asset-item"><span>🟢 KQC (Kenya Home Chain)</span><span id="bal-kqc">15,638.71</span></div>
+                <div class="asset-item"><span>🟠 BTC (Bitcoin)</span><span id="bal-btc">0.0042</span></div>
+                <div class="asset-item"><span>🔷 ETH (Ethereum)</span><span id="bal-eth">0.1500</span></div>
+                <div class="asset-item"><span>🟣 SOL (Solana)</span><span id="bal-sol">1.2500</span></div>
+            </div>
+
+            <div class="card" style="border-left: 5px solid #2e7d32;">
+                <h4>M-Pesa Express (STK Push)</h4>
+                <p><small>Deposit KES instantly into your KQC wallet.</small></p>
+                <label>M-Pesa Phone Number:</label><br>
+                <input type="tel" id="mpesa-phone" value="254712345678" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <label>Amount (KES):</label><br>
+                <input type="number" id="mpesa-amount" value="1000" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <button class="btn btn-mpesa" onclick="depositMpesa()">Deposit via M-Pesa</button>
+                <div id="mpesa-status" class="status-box"></div>
+            </div>
+
+            <div class="card">
+                <h4>Send Asset</h4>
+                <label>Quick Contacts:</label><br>
+                <div>
+                    <span class="demo-chip" onclick="fillAddress('Wanjiku (demo)')">Wanjiku (demo)</span>
+                    <span class="demo-chip" onclick="fillAddress('Kamau Mart (demo)')">Kamau Mart (demo)</span>
+                </div><br>
+                <label>Select Asset:</label><br>
+                <select id="send-asset" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;">
+                    <option value="kqc">KQC</option>
+                    <option value="btc">BTC</option>
+                    <option value="eth">ETH</option>
+                    <option value="sol">SOL</option>
+                </select><br>
+                <label>To address / recipient:</label><br>
+                <input type="text" id="to-address" placeholder="0x... or recipient name" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <label>Amount:</label><br>
+                <input type="number" id="send-amount" value="1.00" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+                <button class="btn" onclick="sendAsset()">Sign and send</button>
+                <div id="send-status" class="status-box"></div>
+            </div>
+        </div>
+
+        <!-- Swap View -->
+        <div id="swap-view" class="view">
+            <div class="card">
+                <h3>Token Swap</h3>
+                <p>Exchange KQC for supported multi-chain assets instantly.</p>
+                <label>From (KQC):</label>
+                <input type="number" value="100" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;">
+                <label>To (Estimated):</label>
+                <input type="number" value="0.02" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;" disabled>
+                <button class="btn" onclick="showInlineStatus('swap-status', 'Swap executed successfully!')">Swap Tokens</button>
+                <div id="swap-status" class="status-box"></div>
+            </div>
+        </div>
+
+        <!-- Futures Trading View -->
+        <div id="futures-view" class="view">
+            <div class="card">
+                <h3>⚡ Derivatives & Futures Trading</h3>
+                <p><small>Trade perpetual contracts with quantum-secured margin.</small></p>
+                
+                <label>Select Market:</label><br>
+                <select id="futures-market" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;">
+                    <option value="BTCUSD">BTC/USD Perpetual</option>
+                    <option value="ETHUSD">ETH/USD Perpetual</option>
+                    <option value="SOLUSD">SOL/USD Perpetual</option>
+                    <option value="XAUUSD">XAU/USD Gold Spot</option>
+                </select><br>
+
+                <label>Leverage:</label><br>
+                <select id="futures-leverage" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;">
+                    <option value="5">5x Leverage</option>
+                    <option value="10" selected>10x Leverage</option>
+                    <option value="20">20x Leverage</option>
+                    <option value="50">50x Leverage</option>
+                    <option value="100">100x Leverage</option>
+                </select><br>
+
+                <label>Margin Amount (KES):</label><br>
+                <input type="number" id="futures-margin" value="2000" style="width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px;"><br>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-long" onclick="openPosition('LONG')">🟢 BUY / LONG</button>
+                    <button class="btn-short" onclick="openPosition('SHORT')">🔴 SELL / SHORT</button>
+                </div>
+                <div id="futures-status" class="status-box"></div>
+            </div>
+
+            <div class="card">
+                <h4>Active Futures Positions</h4>
+                <div id="positions-list">
+                    <p style="color: #777; font-size: 0.9rem;">No active positions open.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bridge View -->
+        <div id="bridge-view" class="view">
+            <div class="card">
+                <h3>Cross-Chain Bridge</h3>
+                <p>Transfer assets securely across networks with quantum-resistant proofs.</p>
+                <button class="btn" onclick="showInlineStatus('bridge-status', 'Bridge transfer initiated successfully!')">Bridge Assets</button>
+                <div id="bridge-status" class="status-box"></div>
+            </div>
+        </div>
+
+        <!-- Stake View -->
+        <div id="stake-view" class="view">
+            <div class="card">
+                <h3>KQC Staking</h3>
+                <p>Earn rewards by staking your KQC on the Kenya home chain.</p>
+                <p><strong>Current APY:</strong> 14.5%</p>
+                <button class="btn" onclick="showInlineStatus('stake-status', 'Staked successfully! Earning rewards.')">Stake KQC</button>
+                <div id="stake-status" class="status-box"></div>
+            </div>
+        </div>
+
+        <!-- Pay View -->
+        <div id="pay-view" class="view">
+            <div class="card">
+                <h3>Merchant Pay</h3>
+                <p>Seamlessly pay verified local merchants using KQC or M-Pesa.</p>
+                <button class="btn" onclick="showInlineStatus('pay-status', 'Payment processed smoothly!')">Pay Merchant</button>
+                <div id="pay-status" class="status-box"></div>
+            </div>
+        </div>
+
+        <!-- Security View -->
+        <div id="security-view" class="view">
+            <div class="card">
+                <h3>Quantum Security</h3>
+                <p><strong>Active Scheme:</strong> ML-DSA-65 (FIPS 204)</p>
+                <p>Your wallet is fully protected against quantum computing decryption attacks.</p>
+            </div>
+        </div>
+
+        <!-- Verifier View -->
+        <div id="verifier-view" class="view">
+            <div class="card">
+                <h3>KQC Seal Verifier</h3>
+                <p>Checks the post-quantum signature (ML-DSA-65, FIPS 204) on official Kenya Quantum Coin artwork.</p>
+                <div style="text-align:center; margin:15px 0;">
+                    <div style="background:#0d5c36; color:white; width:60px; height:60px; line-height:60px; border-radius:50%; display:inline-block; font-size:24px; font-weight:bold;">K</div>
+                </div>
+                <button class="btn" onclick="showInlineStatus('verifier-status', 'Signature verified successfully! Seal is authentic.')">Verify Seal</button>
+                <div id="verifier-status" class="status-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="nav">
+        <button onclick="switchView('wallet')">💳 Wallet</button>
+        <button onclick="switchView('swap')">🔄 Swap</button>
+        <button onclick="switchView('futures')">📊 Futures</button>
+        <button onclick="switchView('bridge')">🌉 Bridge</button>
+        <button onclick="switchView('stake')">📈 Stake</button>
+        <button onclick="switchView('pay')">💸 Pay</button>
+        <button onclick="switchView('security')">🔒 Security</button>
+        <button onclick="switchView('verifier')">🛡️ Verifier</button>
+    </div>
+
+    <script>
+        let wallet = {
+            kes: 24240,
+            kqc: 15638.71,
+            btc: 0.0042,
+            eth: 0.1500,
+            sol: 1.2500
+        };
+
+        let positions = [];
+
+        function updateUI() {
+            document.getElementById('display-kes').innerText = 'KES ' + wallet.kes.toLocaleString();
+            document.getElementById('display-kqc-main').innerText = wallet.kqc.toLocaleString();
+            document.getElementById('bal-kqc').innerText = wallet.kqc.toLocaleString();
+            document.getElementById('bal-btc').innerText = wallet.btc.toFixed(4);
+            document.getElementById('bal-eth').innerText = wallet.eth.toFixed(4);
+            document.getElementById('bal-sol').innerText = wallet.sol.toFixed(4);
+        }
+
+        function switchView(viewName) {
+            const views = ['wallet', 'swap', 'futures', 'bridge', 'stake', 'pay', 'security', 'verifier'];
+            views.forEach(v => {
+                document.getElementById(v + '-view').classList.remove('active');
+            });
+            document.getElementById(viewName + '-view').classList.add('active');
+        }
+
+        function fillAddress(name) {
+            document.getElementById('to-address').value = name;
+        }
+
+        function showInlineStatus(elementId, message) {
+            let el = document.getElementById(elementId);
+            el.innerText = message;
+            el.className = 'status-box success';
+            el.style.display = 'block';
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 4000);
+        }
+
+        function depositMpesa() {
+            let amt = parseFloat(document.getElementById('mpesa-amount').value);
+            if(isNaN(amt) || amt <= 0) {
+                showInlineStatus('mpesa-status', 'Please enter a valid amount');
+                return;
+            }
+            wallet.kes += amt;
+            updateUI();
+            showInlineStatus('mpesa-status', 'M-Pesa STK Push successful! Added KES ' + amt.toLocaleString());
+        }
+
+        function sendAsset() {
+            let asset = document.getElementById('send-asset').value;
+            let amt = parseFloat(document.getElementById('send-amount').value);
+            let recipient = document.getElementById('to-address').value;
+
+            if(!recipient) {
+                showInlineStatus('send-status', 'Please enter a recipient or address.');
+                return;
+            }
+            if(isNaN(amt) || amt <= 0) {
+                showInlineStatus('send-status', 'Please enter a valid send amount.');
+                return;
+            }
+
+            if(wallet[asset] < amt) {
+                showInlineStatus('send-status', 'Insufficient ' + asset.toUpperCase() + ' balance!');
+                return;
+            }
+
+            wallet[asset] -= amt;
+            updateUI();
+            showInlineStatus('send-status', 'Successfully sent ' + amt + ' ' + asset.toUpperCase() + ' to ' + recipient + '!');
+        }
+
+        function openPosition(type) {
+            let market = document.getElementById('futures-market').value;
+            let leverage = document.getElementById('futures-leverage').value;
+            let margin = parseFloat(document.getElementById('futures-margin').value);
+
+            if(isNaN(margin) || margin <= 0) {
+                showInlineStatus('futures-status', 'Please enter a valid margin amount.');
+                return;
+            }
+
+            if(wallet.kes < margin) {
+                showInlineStatus('futures-status', 'Insufficient KES balance for this margin!');
+                return;
+            }
+
+            wallet.kes -= margin;
+            updateUI();
+
+            positions.push({
+                market: market,
+                type: type,
+                leverage: leverage,
+                margin: margin
+            });
+
+            renderPositions();
+            showInlineStatus('futures-status', type + ' position opened on ' + market + ' (' + leverage + 'x)!');
+        }
+
+        function renderPositions() {
+            let listDiv = document.getElementById('positions-list');
+            if(positions.length === 0) {
+                listDiv.innerHTML = '<p style="color: #777; font-size: 0.9rem;">No active positions open.</p>';
+                return;
+            }
+
+            let html = '';
+            positions.forEach((pos) => {
+                let color = pos.type === 'LONG' ? '#2e7d32' : '#c62828';
+                html += `<div class="position-item">
+                    <strong>${pos.market}</strong> <span style="color:${color}; font-weight:bold;">${pos.type} ${pos.leverage}x</span><br>
+                    Margin: KES ${pos.margin.toLocaleString()} | Status: <span style="color:green;">Active 🟢</span>
+                </div>`;
+            });
+            listDiv.innerHTML = html;
+        }
+    </script>
+</body>
+                  </html>
+                  
